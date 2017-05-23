@@ -4,7 +4,7 @@ module.exports = function(app){
 
 	return {
 		index: (req, res) => {
-			service.on('value', snapshot => {
+			service.on('value', snapshot => {				
 				res.render('index', {contacts: snapshot.val() || [] });
 			});
 		},
@@ -32,18 +32,25 @@ module.exports = function(app){
 			});
 		},
 		update: (req, res) => {
-			console.log(req.params.id);
 			let child = service.child(req.params.id);
 			child.update({
 				nome: req.body.nome,
 				email: req.body.email
 			});
-			res.redirect('/');
+			res.redirect('/');			
 		},
 		remover: (req, res) => {
-			let child = service.child(req.params.id);
-			child.set(null);
-			res.redirect('/');
+			var p1 = new Promise(
+				(resolve, reject) => { 
+					let child = service.child(req.params.id);
+					child.set(null);
+					resolve(1); 
+				}
+			);
+			
+			p1.then(obj => {
+				res.redirect('/');
+			});
 		},
 	}
 }
